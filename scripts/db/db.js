@@ -68,11 +68,6 @@ async function watchThousand(name){
     return res.rows
 }
 
-// async function main(){
-//     await watchThousand('second_swaps').then(console.log);
-// }
-// main()
-
 exports.addSwap = addSwap;
 exports.addMint = addMint;
 exports.addBurn = addBurn;
