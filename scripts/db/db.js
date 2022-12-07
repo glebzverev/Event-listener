@@ -68,6 +68,8 @@ async function watchThousand(name){
     return res.rows
 }
 
+// createMintsTable();
+
 exports.addSwap = addSwap;
 exports.addMint = addMint;
 exports.addBurn = addBurn;

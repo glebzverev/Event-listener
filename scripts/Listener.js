@@ -7,8 +7,8 @@ const { TOKEN, SERVER_URL } = process.env
 const TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`
 const URI = `/webhook/${TOKEN}`
 const WEBHOOK_URL = SERVER_URL + URI
-const EXPECTED_PONG_BACK = 2000
-const KEEP_ALIVE_CHECK_INTERVAL = 1000
+const EXPECTED_PONG_BACK = 15000
+const KEEP_ALIVE_CHECK_INTERVAL = 7500
 
 const {Indexer} = require("./Indexer.js");
 
@@ -19,7 +19,11 @@ const init_tg = async () => {
 
 async function Listener(){
     await init_tg()
-    const provider = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
+    
+    // const provider = new ethers.providers.WebSocketProvider(`https://api.etherscan.io/api/apikey=${process.env.API_KEY_ETHERSCAN}`)
+    const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_SOCKET}`)
+    // const provider = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
+    
     const logger = new ethers.utils.Logger();
     
     let pingTimeout = null
@@ -28,6 +32,7 @@ async function Listener(){
         keepAliveInterval = setInterval(() => {
           logger.debug('Checking if the connection is alive, sending a ping')
           provider._websocket.ping()
+          provider.getBlockNumber().then(console.log)
           //   console.log("ping")
           // Use `WebSocket#terminate()`, which immediately destroys the connection,
           // instead of `WebSocket#close()`, which waits for the close timer.
@@ -43,10 +48,10 @@ async function Listener(){
       })
 
     provider._websocket.on('close', () => {
-        logger.error('The websocket connection was closed')
+        logger.warn('The websocket connection was closed')
         clearInterval(keepAliveInterval)
         clearTimeout(pingTimeout)
-        startConnection()
+        Listener()
       })
 
     provider._websocket.on('pong', () => {

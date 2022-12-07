@@ -28,6 +28,7 @@ function events (contract, pair) {
             text: JSON.stringify(info, null, 10)
         })
         await addSwap(info)
+        console.log(event.id)
     })
 
     contract.on("Burn", async (  owner, tickLower, tickUpper, amount, amount0, amount1, event) =>{
