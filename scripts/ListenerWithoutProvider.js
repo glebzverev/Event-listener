@@ -19,12 +19,13 @@ const init_tg = async () => {
     console.log(res.data)
 }
 
-async function Listener(){
+async function ListenerWithoutProvider(provider){
     // await init_tg()
     
     // const provider = new ethers.providers.WebSocketProvider(`https://api.etherscan.io/api/apikey=${process.env.API_KEY_ETHERSCAN}`)
     //const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_SOCKET}`)
-    const provider = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
+    // const  = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
+
     const logger = new ethers.utils.Logger();
     
     let pingTimeout = null
@@ -38,15 +39,25 @@ async function Listener(){
 			  process.send({error: `${err}`})
 		  }
 		  else if (res){
-			  process.send({blockNumber: res})
-		  }
+			messages.send('blockNumber', {blockNumber: res}, response => {
+        console.log(`response: ${response}`)
+      })
+		}
 	  })
-      pingTimeout = setTimeout(() => {
-        provider._websocket.terminate()
-      }, EXPECTED_PONG_BACK)
-    }, KEEP_ALIVE_CHECK_INTERVAL)
+          //   console.log("ping")
+          // Use `WebSocket#terminate()`, which immediately destroys the connection,
+          // instead of `WebSocket#close()`, which waits for the close timer.
+          // Delay should be equal to the interval at which your server
+          // sends out pings plus a conservative assumption of the latency.
+          pingTimeout = setTimeout(() => {
+            provider._websocket.terminate()
+          }, EXPECTED_PONG_BACK)
+        }, KEEP_ALIVE_CHECK_INTERVAL)
     
-	  process.send({status: "provider is on"})
+	messages.send('status', {status: "provider is on"}, response =>{
+    console.log(`response: ${response}`)
+  })
+        //console.log("provider is on!")
         Indexer(provider);
       })
 
@@ -61,8 +72,7 @@ async function Listener(){
         logger.debug('Received pong, so connection is alive, clearing the timeout')
         clearInterval(pingTimeout)
         // console.log("pong")
-      })    
-
+      })
 }
 
 // async function main(){
@@ -74,4 +84,4 @@ async function Listener(){
     // process.exitCode = 1;
   // });
 
-exports.Listener = Listener;
+exports.ListenerWithoutProvider = ListenerWithoutProvider;

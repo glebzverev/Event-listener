@@ -23,10 +23,10 @@ function events (contract, pair) {
             tickevent: tickevent, 
             blockNumber: event.blockNumber
         }
-        await axios.post(`${TELEGRAM_API}/sendMessage`, {
-            chat_id: chatId,
-            text: JSON.stringify(info, null, 10)
-        })
+        // await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        //     chat_id: chatId,
+        //     text: JSON.stringify(info, null, 10)
+        // })
         await addSwap(info)
         console.log(event.id)
     })
@@ -43,10 +43,10 @@ function events (contract, pair) {
             amount1: amount1.toString(),  
             blockNumber: event.blockNumber
         }
-        await axios.post(`${TELEGRAM_API}/sendMessage`, {
-            chat_id: chatId,
-            text: JSON.stringify(info, null, 9)
-        })
+        // await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        //     chat_id: chatId,
+        //     text: JSON.stringify(info, null, 9)
+        // })
         await addBurn(info)
     })
 
@@ -63,10 +63,10 @@ function events (contract, pair) {
             amount1: amount1.toString(), 
             blockNumber: event.blockNumber
         }
-        await axios.post(`${TELEGRAM_API}/sendMessage`, {
-            chat_id: chatId,
-            text: JSON.stringify(info, null, 10)
-        })
+        // await axios.post(`${TELEGRAM_API}/sendMessage`, {
+        //     chat_id: chatId,
+        //     text: JSON.stringify(info, null, 10)
+        // })
         await addMint(info)
     })
 }
