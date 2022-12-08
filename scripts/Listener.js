@@ -18,11 +18,11 @@ const init_tg = async () => {
 }
 
 async function Listener(){
-    await init_tg()
+    // await init_tg()
     
     // const provider = new ethers.providers.WebSocketProvider(`https://api.etherscan.io/api/apikey=${process.env.API_KEY_ETHERSCAN}`)
-    const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_SOCKET}`)
-    // const provider = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
+    //const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_SOCKET}`)
+     const provider = new ethers.providers.WebSocketProvider(`wss://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_SOCKET}`)
     
     const logger = new ethers.utils.Logger();
     
@@ -32,7 +32,14 @@ async function Listener(){
         keepAliveInterval = setInterval(() => {
           logger.debug('Checking if the connection is alive, sending a ping')
           provider._websocket.ping()
-          provider.getBlockNumber().then(console.log)
+          provider.getBlockNumber().then((res,err)=>{
+		  if (err){
+			  process.send({error: `${err}`})
+		  }
+		  else if (res){
+			process.send({blockNumber: res})
+		}
+	  })
           //   console.log("ping")
           // Use `WebSocket#terminate()`, which immediately destroys the connection,
           // instead of `WebSocket#close()`, which waits for the close timer.
@@ -43,7 +50,8 @@ async function Listener(){
           }, EXPECTED_PONG_BACK)
         }, KEEP_ALIVE_CHECK_INTERVAL)
     
-        console.log("provider is on!")
+	process.send({ststus: "provider is on"})
+        //console.log("provider is on!")
         Indexer(provider);
       })
 
@@ -61,7 +69,11 @@ async function Listener(){
       })
 }
 
-Listener().catch((error) => {
+async function main(){
+	Listener()
+}
+
+main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
   });
